@@ -16,7 +16,7 @@ spring-data-mongodb增强工具包，简化 CRUD 操作，提供类mybatis plus�
     <dependency>
         <groupId>cn.craccd</groupId>
         <artifactId>mongoHelper</artifactId>
-        <version>0.6.9</version>
+        <version>0.7.5</version>
     </dependency>
 ```
 
@@ -124,7 +124,7 @@ public Page search(Page page, String word, Integer type) {
 ```
 
 ###### 4.  表映射对象
-项目启动时本orm会扫描项目下所有@Document注解的类并建立相应表、索引、字段默认值，这个@Document注解是spring-data-mongodb定义的，另外本项目新增了一个属性注解@InitValue，用于提供字段初始值，和mysql的默认值类似，注意mongodb本身字段是没有默认值的，这里是项目本身用代码实现默认值的功能。如要建立索引，使用@Indexed标记属性建立相应索引，也是spring-data-mongodb定义的。
+项目启动时本orm会扫描项目下所有@Document注解的类并建立相应表、索引、字段默认值，这个@Document注解是spring-data-mongodb定义的，另外本项目新增了一个属性注解@InitValue，用于提供字段初始值，和mysql的默认值类似，注意mongodb本身字段是没有默认值的，这里是项目本身用代码实现默认值的功能。如要建立索引，使用@Indexed标记属性建立相应索引，也是spring-data-mongodb定义的。如果有不需要在数据库建立字段的属性，使用@IgnoreColumn注解忽略此属性。
 
 如果想继承被@Document注解的类，但又不想被父类的注解影响生成新的表，可使用@IgnoreDocument，防止mongoHelper生成不需要的表。
 
@@ -133,11 +133,14 @@ public Page search(Page page, String word, Integer type) {
 public class User extends BaseModel {
 	@InitValue("0")
 	Integer type; // 类型 0客户 1经销商
-	@Indexed
+
+	@Indexed // 添加索引
 	String name;
+
+	@IgnoreColumn // 忽略字段
 	String phone;
 
-        public String getPhone() {
+    public String getPhone() {
 		return phone;
 	}
 

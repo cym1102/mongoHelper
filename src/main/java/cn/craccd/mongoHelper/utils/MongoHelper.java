@@ -26,6 +26,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
 import cn.craccd.mongoHelper.bean.CreateTime;
+import cn.craccd.mongoHelper.bean.IgnoreColumn;
 import cn.craccd.mongoHelper.bean.InitValue;
 import cn.craccd.mongoHelper.bean.Page;
 import cn.craccd.mongoHelper.bean.SlowQuery;
@@ -35,6 +36,7 @@ import cn.craccd.mongoHelper.bean.UpdateTime;
 import cn.craccd.mongoHelper.config.Constant;
 import cn.craccd.mongoHelper.reflection.ReflectionUtil;
 import cn.craccd.mongoHelper.reflection.SerializableFunction;
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.ReflectUtil;
 import cn.hutool.core.util.StrUtil;
@@ -323,9 +325,17 @@ public class MongoHelper {
 			// 去除id值
 			ReflectUtil.setFieldValue(object, Constant.ID, null);
 
-			mongoTemplate.save(object);
-			id = (String) ReflectUtil.getFieldValue(object, Constant.ID);
-			logSave(object, time, true);
+			// 克隆一个@IgnoreColumn的字段设为null的对象;
+			Object objectClone = BeanUtil.copyProperties(object, object.getClass());
+			ignoreColumn(objectClone);
+
+			mongoTemplate.save(objectClone);
+			id = (String) ReflectUtil.getFieldValue(objectClone, Constant.ID);
+			
+			// 设置id值
+			ReflectUtil.setFieldValue(object, Constant.ID, id);
+			
+			logSave(objectClone, time, true);
 
 		} else {
 			// 更新
@@ -339,8 +349,12 @@ public class MongoHelper {
 
 			// 设置更新时间
 			setUpdateTime(objectOrg, time);
-			mongoTemplate.save(objectOrg);
-			logSave(objectOrg, time, false);
+			// 克隆一个@IgnoreColumn的字段设为null的对象;
+			Object objectClone = BeanUtil.copyProperties(objectOrg, object.getClass());
+			ignoreColumn(objectClone);
+
+			mongoTemplate.save(objectClone);
+			logSave(objectClone, time, false);
 		}
 
 		return id;
@@ -367,6 +381,7 @@ public class MongoHelper {
 	public <T> void insertAll(List<T> list) {
 		Long time = System.currentTimeMillis();
 
+		List listClone = new ArrayList<>();
 		for (Object object : list) {
 
 			// 去除id以便插入
@@ -377,10 +392,14 @@ public class MongoHelper {
 			setUpdateTime(object, time);
 			// 设置默认值
 			setDefaultVaule(object);
+			// 克隆一个@IgnoreColumn的字段设为null的对象;
+			Object objectClone = BeanUtil.copyProperties(object, object.getClass());
+			ignoreColumn(objectClone);
+			listClone.add(objectClone);
 		}
 
-		mongoTemplate.insertAll(list);
-		logSave(list, time);
+		mongoTemplate.insertAll(listClone);
+		logSave(listClone, time);
 
 	}
 
@@ -410,6 +429,21 @@ public class MongoHelper {
 			// 获取注解
 			if (field.isAnnotationPresent(CreateTime.class) && field.getType().equals(Long.class)) {
 				ReflectUtil.setFieldValue(object, field, time);
+			}
+		}
+	}
+
+	/**
+	 * 将带有@IgnoreColumn的字段设为null;
+	 * 
+	 * @param object 对象
+	 */
+	private void ignoreColumn(Object object) {
+		Field[] fields = ReflectUtil.getFields(object.getClass());
+		for (Field field : fields) {
+			// 获取注解
+			if (field.isAnnotationPresent(IgnoreColumn.class)) {
+				ReflectUtil.setFieldValue(object, field, null);
 			}
 		}
 	}

@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import com.mongodb.client.result.UpdateResult;
 
+import cn.craccd.mongoHelper.bean.IgnoreColumn;
 import cn.craccd.mongoHelper.bean.IgnoreDocument;
 import cn.craccd.mongoHelper.bean.InitValue;
 import cn.craccd.mongoHelper.utils.PackageUtil;
