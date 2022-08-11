@@ -170,7 +170,7 @@ public class MongoHelper {
 		MongoPersistentEntity<?> entity = mongoConverter.getMappingContext().getPersistentEntity(clazz);
 		Document mappedQuery = queryMapper.getMappedObject(query.getQueryObject(), entity);
 
-		String log = "\ndb." + StrUtil.lowerFirst(clazz.getSimpleName()) + ".find(";
+		String log = "\ndb." + getCollectionName(clazz) + ".find(";
 		log += FormatUtils.bson(mappedQuery.toJson()) + ")";
 		log += ".count();";
 
@@ -196,7 +196,7 @@ public class MongoHelper {
 		MongoPersistentEntity<?> entity = mongoConverter.getMappingContext().getPersistentEntity(clazz);
 		Document mappedQuery = queryMapper.getMappedObject(query.getQueryObject(), entity);
 
-		String log = "\ndb." + StrUtil.lowerFirst(clazz.getSimpleName()) + ".remove(";
+		String log = "\ndb." + getCollectionName(clazz) + ".remove(";
 		log += FormatUtils.bson(mappedQuery.toJson()) + ")";
 		log += ";";
 
@@ -223,7 +223,7 @@ public class MongoHelper {
 		Document mappedQuery = queryMapper.getMappedObject(query.getQueryObject(), entity);
 		Document mappedUpdate = updateMapper.getMappedObject(updateBuilder.toUpdate().getUpdateObject(), entity);
 
-		String log = "\ndb." + StrUtil.lowerFirst(clazz.getSimpleName()) + ".update(";
+		String log = "\ndb." + getCollectionName(clazz) + ".update(";
 		log += FormatUtils.bson(mappedQuery.toJson()) + ",";
 		log += FormatUtils.bson(mappedUpdate.toJson()) + ",";
 		log += FormatUtils.bson("{multi:" + multi + "})");
@@ -255,7 +255,7 @@ public class MongoHelper {
 			jsonObject.remove(Constant.ID);
 		}
 
-		String log = "\ndb." + StrUtil.lowerFirst(object.getClass().getSimpleName()) + ".save(";
+		String log = "\ndb." + getCollectionName(object.getClass()) + ".save(";
 		log += JSONUtil.toJsonPrettyStr(jsonObject);
 		log += ");";
 
@@ -287,7 +287,7 @@ public class MongoHelper {
 		}
 
 		Object object = list.get(0);
-		String log = "\ndb." + StrUtil.lowerFirst(object.getClass().getSimpleName()) + ".save(";
+		String log = "\ndb." + getCollectionName(object.getClass()) + ".save(";
 		log += JSONUtil.toJsonPrettyStr(cloneList);
 		log += ");";
 
@@ -331,10 +331,10 @@ public class MongoHelper {
 
 			mongoTemplate.save(objectClone);
 			id = (String) ReflectUtil.getFieldValue(objectClone, Constant.ID);
-			
+
 			// 设置id值
 			ReflectUtil.setFieldValue(object, Constant.ID, id);
-			
+
 			logSave(objectClone, time, true);
 
 		} else {
