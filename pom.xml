@@ -7,7 +7,7 @@
 	<name>mongoHelper</name>
 	<description>spring-data-mongodb增强工具包，简化 CRUD 操作，提供类jpa的数据库操作</description>
 	<url>https://gitee.com/cym1102/mongoHelper</url>
-	<version>0.7.6</version>
+	<version>0.7.8</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -52,6 +52,7 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-mongodb</artifactId>
+			<!-- <version>2.7.2</version> -->
 		</dependency>
 
 		<dependency>
