@@ -6,16 +6,17 @@ import org.springframework.data.mongodb.core.query.Criteria;
 
 import cn.craccd.mongoHelper.reflection.ReflectionUtil;
 import cn.craccd.mongoHelper.reflection.SerializableFunction;
+
 /**
  * 查询语句生成器 OR连接
  *
  */
-public class CriteriaOrWrapper extends CriteriaWrapper{
-	
+public class CriteriaOrWrapper extends CriteriaWrapper {
+
 	public CriteriaOrWrapper() {
 		andLink = false;
 	}
-	
+
 	public CriteriaOrWrapper or(Criteria criteria) {
 		list.add(criteria);
 		return this;
@@ -25,18 +26,6 @@ public class CriteriaOrWrapper extends CriteriaWrapper{
 		list.add(criteriaWrapper.build());
 		return this;
 	}
-
-//	/**
-//	 * 等于
-//	 * 
-//	 * @param column 字段
-//	 * @param params 参数
-//	 * @return CriteriaWrapper
-//	 */
-//	public CriteriaOrWrapper eq(String column, Object params) {
-//		super.eq(column, params);
-//		return this;
-//	}
 
 	/**
 	 * 等于
@@ -50,18 +39,6 @@ public class CriteriaOrWrapper extends CriteriaWrapper{
 		return this;
 	}
 
-//	/**
-//	 * 不等于
-//	 * 
-//	 * @param column 字段
-//	 * @param params 参数
-//	 * @return CriteriaOrWrapper
-//	 */
-//	public CriteriaOrWrapper ne(String column, Object params) {
-//		super.ne(column, params);
-//		return this;
-//	}
-
 	/**
 	 * 不等于
 	 * 
@@ -73,18 +50,6 @@ public class CriteriaOrWrapper extends CriteriaWrapper{
 		super.ne(column, params);
 		return this;
 	}
-
-//	/**
-//	 * 小于
-//	 * 
-//	 * @param column 字段
-//	 * @param params 参数
-//	 * @return CriteriaOrWrapper
-//	 */
-//	public CriteriaOrWrapper lt(String column, Object params) {
-//		super.lt(column, params);
-//		return this;
-//	}
 
 	/**
 	 * 小于
@@ -98,18 +63,6 @@ public class CriteriaOrWrapper extends CriteriaWrapper{
 		return this;
 	}
 
-//	/**
-//	 * 小于或等于
-//	 * 
-//	 * @param column 字段
-//	 * @param params 参数
-//	 * @return CriteriaOrWrapper
-//	 */
-//	public CriteriaOrWrapper lte(String column, Object params) {
-//		super.lte(column, params);
-//		return this;
-//	}
-
 	/**
 	 * 小于或等于
 	 * 
@@ -121,18 +74,6 @@ public class CriteriaOrWrapper extends CriteriaWrapper{
 		super.lte(column, params);
 		return this;
 	}
-
-//	/**
-//	 * 大于
-//	 * 
-//	 * @param column 字段
-//	 * @param params 参数
-//	 * @return CriteriaOrWrapper
-//	 */
-//	public CriteriaOrWrapper gt(String column, Object params) {
-//		super.gt(column, params);
-//		return this;
-//	}
 
 	/**
 	 * 大于
@@ -146,18 +87,6 @@ public class CriteriaOrWrapper extends CriteriaWrapper{
 		return this;
 	}
 
-//	/**
-//	 * 大于或等于
-//	 * 
-//	 * @param column 字段
-//	 * @param params 参数
-//	 * @return CriteriaOrWrapper
-//	 */
-//	public CriteriaOrWrapper gte(String column, Object params) {
-//		super.gte(column, params);
-//		return this;
-//	}
-
 	/**
 	 * 大于或等于
 	 * 
@@ -169,18 +98,6 @@ public class CriteriaOrWrapper extends CriteriaWrapper{
 		super.gte(column, params);
 		return this;
 	}
-
-//	/**
-//	 * 包含
-//	 * 
-//	 * @param column 字段
-//	 * @param params 参数
-//	 * @return CriteriaOrWrapper
-//	 */
-//	public CriteriaOrWrapper contain(String column, Object params) {
-//		super.contain(column, params);
-//		return this;
-//	}
 
 	/**
 	 * 包含
@@ -194,18 +111,6 @@ public class CriteriaOrWrapper extends CriteriaWrapper{
 		return this;
 	}
 
-//	/**
-//	 * 包含,以或连接
-//	 * 
-//	 * @param column 字段
-//	 * @param params 参数
-//	 * @return CriteriaOrWrapper
-//	 */
-//	public CriteriaOrWrapper containOr(String column, Collection<?> params) {
-//		super.containOr(column, params);
-//		return this;
-//	}
-
 	/**
 	 * 包含,以或连接
 	 * 
@@ -217,18 +122,6 @@ public class CriteriaOrWrapper extends CriteriaWrapper{
 		super.containOr(column, params);
 		return this;
 	}
-
-//	/**
-//	 * 包含,以或连接
-//	 * 
-//	 * @param column 字段
-//	 * @param params 参数
-//	 * @return CriteriaOrWrapper
-//	 */
-//	public CriteriaOrWrapper containOr(String column, Object[] params) {
-//		super.containOr(column, params);
-//		return this;
-//	}
 
 	/**
 	 * 包含,以或连接
@@ -242,18 +135,6 @@ public class CriteriaOrWrapper extends CriteriaWrapper{
 		return this;
 	}
 
-//	/**
-//	 * 包含,以且连接
-//	 * 
-//	 * @param column 字段
-//	 * @param params 参数
-//	 * @return CriteriaOrWrapper
-//	 */
-//	public CriteriaOrWrapper containAnd(String column, Collection<?> params) {
-//		super.containAnd(column, params);
-//		return this;
-//	}
-
 	/**
 	 * 包含,以且连接
 	 * 
@@ -265,18 +146,6 @@ public class CriteriaOrWrapper extends CriteriaWrapper{
 		super.containAnd(column, params);
 		return this;
 	}
-
-//	/**
-//	 * 包含,以且连接
-//	 * 
-//	 * @param column 字段
-//	 * @param params 参数
-//	 * @return CriteriaOrWrapper
-//	 */
-//	public CriteriaOrWrapper containAnd(String column, Object[] params) {
-//		super.containAnd(column, params);
-//		return this;
-//	}
 
 	/**
 	 * 包含,以且连接
@@ -290,18 +159,6 @@ public class CriteriaOrWrapper extends CriteriaWrapper{
 		return this;
 	}
 
-//	/**
-//	 * 相似于
-//	 * 
-//	 * @param column 字段
-//	 * @param params 参数
-//	 * @return CriteriaOrWrapper
-//	 */
-//	public CriteriaOrWrapper like(String column, String params) {
-//		super.like(column, params);
-//		return this;
-//	}
-
 	/**
 	 * 相似于
 	 * 
@@ -314,18 +171,6 @@ public class CriteriaOrWrapper extends CriteriaWrapper{
 		return this;
 	}
 
-//	/**
-//	 * 在其中
-//	 * 
-//	 * @param column 字段
-//	 * @param params 参数
-//	 * @return CriteriaOrWrapper
-//	 */
-//	public CriteriaOrWrapper in(String column, Collection<?> params) {
-//		super.in(column, params);
-//		return this;
-//	}
-
 	/**
 	 * 在其中
 	 * 
@@ -337,18 +182,6 @@ public class CriteriaOrWrapper extends CriteriaWrapper{
 		super.in(column, params);
 		return this;
 	}
-//
-//	/**
-//	 * 在其中
-//	 * 
-//	 * @param column 字段
-//	 * @param params 参数
-//	 * @return CriteriaOrWrapper
-//	 */
-//	public CriteriaOrWrapper in(String column, Object[] params) {
-//		super.in(column, params);
-//		return this;
-//	}
 
 	/**
 	 * 在其中
@@ -362,18 +195,6 @@ public class CriteriaOrWrapper extends CriteriaWrapper{
 		return this;
 	}
 
-//	/**
-//	 * 不在其中
-//	 * 
-//	 * @param column 字段
-//	 * @param params 参数
-//	 * @return CriteriaOrWrapper
-//	 */
-//	public CriteriaOrWrapper nin(String column, Collection<?> params) {
-//		super.nin(column, params);
-//		return this;
-//	}
-
 	/**
 	 * 不在其中
 	 * 
@@ -385,18 +206,6 @@ public class CriteriaOrWrapper extends CriteriaWrapper{
 		super.nin(column, params);
 		return this;
 	}
-
-//	/**
-//	 * 不在其中
-//	 * 
-//	 * @param column 字段
-//	 * @param params 参数
-//	 * @return CriteriaOrWrapper
-//	 */
-//	public CriteriaOrWrapper nin(String column, Object[] params) {
-//		super.nin(column, params);
-//		return this;
-//	}
 
 	/**
 	 * 不在其中
@@ -410,18 +219,6 @@ public class CriteriaOrWrapper extends CriteriaWrapper{
 		return this;
 	}
 
-//	/**
-//	 * 为空
-//	 * 
-//	 *
-//	 * @param column 字段
-//	 * @return CriteriaOrWrapper
-//	 */
-//	public CriteriaOrWrapper isNull(String column) {
-//		super.isNull(column);
-//		return this;
-//	}
-
 	/**
 	 * 为空
 	 * 
@@ -434,18 +231,6 @@ public class CriteriaOrWrapper extends CriteriaWrapper{
 		return this;
 	}
 
-//	/**
-//	 * 不为空
-//	 * 
-//	 *
-//	 * @param column 字段
-//	 * @return CriteriaOrWrapper
-//	 */
-//	public CriteriaOrWrapper isNotNull(String column) {
-//		super.isNotNull(column);
-//		return this;
-//	}
-
 	/**
 	 * 不为空
 	 * 
@@ -457,19 +242,6 @@ public class CriteriaOrWrapper extends CriteriaWrapper{
 		super.isNotNull(column);
 		return this;
 	}
-//
-//	/**
-//	 * 数组查询
-//	 * 
-//	 * @param arr    数组名
-//	 * @param column 字段名
-//	 * @param param  字段值
-//	 * @return
-//	 */
-//	public CriteriaOrWrapper findArray(String arr, String column, String param) {
-//		super.findArray(arr, column, param);
-//		return this;
-//	}
 
 	/**
 	 * 数组查询
@@ -479,23 +251,10 @@ public class CriteriaOrWrapper extends CriteriaWrapper{
 	 * @param param  字段值
 	 * @return
 	 */
-	public <E, R> CriteriaOrWrapper findArray(SerializableFunction<E, R> arr, SerializableFunction<E, R> column, String param) {
+	public <E, R> CriteriaOrWrapper findArray(SerializableFunction<E, R> arr, SerializableFunction<E, R> column, Object param) {
 		super.findArray(ReflectionUtil.getFieldName(arr), column, param);
 		return this;
 	}
-
-//	/**
-//	 * 数组模糊查询
-//	 * 
-//	 * @param arr    数组名
-//	 * @param column 字段名
-//	 * @param param  字段值
-//	 * @return
-//	 */
-//	public CriteriaOrWrapper findArrayLike(String arr, String column, String param) {
-//		super.findArrayLike(arr, column, param);
-//		return this;
-//	}
 
 	/**
 	 * 数组模糊查询
