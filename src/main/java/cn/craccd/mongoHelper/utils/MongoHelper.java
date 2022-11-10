@@ -94,7 +94,8 @@ public class MongoHelper {
 			// 保存堆栈
 			String stackStr = "";
 			for (int i = 0; i < stack.length; i++) {
-				stackStr += stack[i].getClassName() + "." + stack[i].getMethodName() + ":" + stack[i].getLineNumber() + "\n";
+				stackStr += stack[i].getClassName() + "." + stack[i].getMethodName() + ":" + stack[i].getLineNumber()
+						+ "\n";
 			}
 			slowQuery.setStack(stackStr);
 
@@ -158,7 +159,8 @@ public class MongoHelper {
 	 * @return String 集合名
 	 */
 	private String getCollectionName(Class<?> clazz) {
-		org.springframework.data.mongodb.core.mapping.Document document = clazz.getAnnotation(org.springframework.data.mongodb.core.mapping.Document.class);
+		org.springframework.data.mongodb.core.mapping.Document document = clazz
+				.getAnnotation(org.springframework.data.mongodb.core.mapping.Document.class);
 		if (document != null) {
 			if (StrUtil.isNotEmpty(document.value())) {
 				return document.value();
@@ -397,7 +399,7 @@ public class MongoHelper {
 	 * @param list 批量插入对象
 	 * @return Collection<T> 批量对象id集合
 	 */
-	public <T> Collection<T> insertAll(List<T> list) {
+	public <T> List<String> insertAll(List<T> list) {
 		Long time = System.currentTimeMillis();
 
 		List listClone = new ArrayList<>();
@@ -417,10 +419,16 @@ public class MongoHelper {
 			listClone.add(objectClone);
 		}
 
-		Collection<T> collection = mongoTemplate.insertAll(listClone);
+		mongoTemplate.insertAll(listClone);
 		logSave(listClone, time);
 
-		return collection;
+		List<String> ids = new ArrayList<>();
+		for (Object object : listClone) {
+			String id = (String) ReflectUtil.getFieldValue(object, Constant.ID);
+			ids.add(id);
+		}
+
+		return ids;
 	}
 
 	/**
@@ -538,7 +546,8 @@ public class MongoHelper {
 
 		Long time = System.currentTimeMillis();
 		Query query = new Query(criteriaWrapper.build());
-		UpdateResult updateResult = mongoTemplate.updateMulti(new Query(criteriaWrapper.build()), updateBuilder.toUpdate(), clazz);
+		UpdateResult updateResult = mongoTemplate.updateMulti(new Query(criteriaWrapper.build()),
+				updateBuilder.toUpdate(), clazz);
 		logUpdate(clazz, query, updateBuilder, true, time);
 
 		return updateResult;
@@ -640,7 +649,8 @@ public class MongoHelper {
 	 * @param object
 	 * @return UpdateResult 更新结果
 	 */
-	public <R, E> UpdateResult addCountById(String id, SerializableFunction<E, R> property, Number count, Class<?> clazz) {
+	public <R, E> UpdateResult addCountById(String id, SerializableFunction<E, R> property, Number count,
+			Class<?> clazz) {
 		UpdateBuilder updateBuilder = new UpdateBuilder().inc(property, count);
 
 		return updateFirst(new CriteriaAndWrapper().eq(Constant::getId, id), updateBuilder, clazz);
@@ -667,7 +677,8 @@ public class MongoHelper {
 	 * @param clazz    类
 	 * @return Page 分页
 	 */
-	public <T> Page<T> findPage(CriteriaWrapper criteriaWrapper, SortBuilder sortBuilder, Page<?> page, Class<T> clazz) {
+	public <T> Page<T> findPage(CriteriaWrapper criteriaWrapper, SortBuilder sortBuilder, Page<?> page,
+			Class<T> clazz) {
 
 		Page<T> pageResp = new Page<T>();
 		pageResp.setCurr(page.getCurr());
@@ -827,7 +838,8 @@ public class MongoHelper {
 	 * @param propertyClass 属性类
 	 * @return List 列表
 	 */
-	public <T, R, E> List<T> findPropertiesByQuery(CriteriaWrapper criteriaWrapper, Class<?> documentClass, SerializableFunction<E, R> property, Class<T> propertyClass) {
+	public <T, R, E> List<T> findPropertiesByQuery(CriteriaWrapper criteriaWrapper, Class<?> documentClass,
+			SerializableFunction<E, R> property, Class<T> propertyClass) {
 		Query query = new Query(criteriaWrapper.build());
 		query.fields().include(ReflectionUtil.getFieldName(property));
 
@@ -848,7 +860,8 @@ public class MongoHelper {
 	 * @param property      属性
 	 * @return List 列表
 	 */
-	public <R, E> List<String> findPropertiesByQuery(CriteriaWrapper criteriaWrapper, Class<?> documentClass, SerializableFunction<E, R> property) {
+	public <R, E> List<String> findPropertiesByQuery(CriteriaWrapper criteriaWrapper, Class<?> documentClass,
+			SerializableFunction<E, R> property) {
 		return findPropertiesByQuery(criteriaWrapper, documentClass, property, String.class);
 	}
 
@@ -861,7 +874,8 @@ public class MongoHelper {
 	 * @param property      属性
 	 * @return List 列表
 	 */
-	public <R, E> List<String> findPropertiesByIds(List<String> ids, Class<?> clazz, SerializableFunction<E, R> property) {
+	public <R, E> List<String> findPropertiesByIds(List<String> ids, Class<?> clazz,
+			SerializableFunction<E, R> property) {
 		CriteriaAndWrapper criteriaAndWrapper = new CriteriaAndWrapper().in(Constant::getId, ids);
 		return findPropertiesByQuery(criteriaAndWrapper, clazz, property);
 	}
