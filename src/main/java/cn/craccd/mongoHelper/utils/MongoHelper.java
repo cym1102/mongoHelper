@@ -25,6 +25,9 @@ import org.springframework.data.mongodb.core.mapping.MongoPersistentEntity;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Service;
 
+import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.UpdateResult;
+
 import cn.craccd.mongoHelper.bean.CreateTime;
 import cn.craccd.mongoHelper.bean.IgnoreColumn;
 import cn.craccd.mongoHelper.bean.InitValue;
@@ -102,7 +105,9 @@ public class MongoHelper {
 	/**
 	 * 打印查询语句
 	 * 
-	 * @param query
+	 * @param clazz     类
+	 * @param query     查询对象
+	 * @param startTime 查询开始时间
 	 */
 	private void logQuery(Class<?> clazz, Query query, Long startTime) {
 
@@ -146,6 +151,12 @@ public class MongoHelper {
 
 	}
 
+	/**
+	 * 根据类获取集合名
+	 * 
+	 * @param clazz 类
+	 * @return String 集合名
+	 */
 	private String getCollectionName(Class<?> clazz) {
 		org.springframework.data.mongodb.core.mapping.Document document = clazz.getAnnotation(org.springframework.data.mongodb.core.mapping.Document.class);
 		if (document != null) {
@@ -163,7 +174,9 @@ public class MongoHelper {
 	/**
 	 * 打印查询语句
 	 * 
-	 * @param query
+	 * @param clazz     类
+	 * @param query     查询对象
+	 * @param startTime 查询开始时间
 	 */
 	private void logCount(Class<?> clazz, Query query, Long startTime) {
 
@@ -189,7 +202,9 @@ public class MongoHelper {
 	/**
 	 * 打印查询语句
 	 * 
-	 * @param query
+	 * @param clazz     类
+	 * @param query     查询对象
+	 * @param startTime 查询开始时间
 	 */
 	private void logDelete(Class<?> clazz, Query query, Long startTime) {
 
@@ -215,7 +230,11 @@ public class MongoHelper {
 	/**
 	 * 打印查询语句
 	 * 
-	 * @param query
+	 * @param clazz         类
+	 * @param query         查询对象
+	 * @param updateBuilder 更新对象
+	 * @param multi         是否为批量更新
+	 * @param startTime     查询开始时间
 	 */
 	private void logUpdate(Class<?> clazz, Query query, UpdateBuilder updateBuilder, boolean multi, Long startTime) {
 
@@ -244,9 +263,9 @@ public class MongoHelper {
 	/**
 	 * 打印查询语句
 	 * 
-	 * @param object
-	 * 
-	 * @param query
+	 * @param object    保存对象
+	 * @param startTime 查询开始时间
+	 * @param isInsert  是否为插入
 	 */
 	private void logSave(Object object, Long startTime, Boolean isInsert) {
 		JSONObject jsonObject = JSONUtil.parseObj(object);
@@ -273,9 +292,8 @@ public class MongoHelper {
 	/**
 	 * 打印查询语句
 	 * 
-	 * @param object
-	 * 
-	 * @param query
+	 * @param list      保存集合
+	 * @param startTime 查询开始时间
 	 */
 	private void logSave(List<?> list, Long startTime) {
 		List<JSONObject> cloneList = new ArrayList<>();
@@ -305,7 +323,8 @@ public class MongoHelper {
 	/**
 	 * 插入或更新
 	 * 
-	 * @param object 对象
+	 * @param object 保存对象
+	 * @return String 对象id
 	 */
 	public String insertOrUpdate(Object object) {
 
@@ -364,6 +383,7 @@ public class MongoHelper {
 	 * 插入
 	 * 
 	 * @param object 对象
+	 * @return String 对象id
 	 */
 	public String insert(Object object) {
 		ReflectUtil.setFieldValue(object, Constant.ID, null);
@@ -374,11 +394,10 @@ public class MongoHelper {
 	/**
 	 * 批量插入
 	 * 
-	 * @param <T>
-	 * 
-	 * @param object 对象
+	 * @param list 批量插入对象
+	 * @return Collection<T> 批量对象id集合
 	 */
-	public <T> void insertAll(List<T> list) {
+	public <T> Collection<T> insertAll(List<T> list) {
 		Long time = System.currentTimeMillis();
 
 		List listClone = new ArrayList<>();
@@ -398,15 +417,17 @@ public class MongoHelper {
 			listClone.add(objectClone);
 		}
 
-		mongoTemplate.insertAll(listClone);
+		Collection<T> collection = mongoTemplate.insertAll(listClone);
 		logSave(listClone, time);
 
+		return collection;
 	}
 
 	/**
 	 * 设置更新时间
 	 * 
 	 * @param object 对象
+	 * @param time   更新时间
 	 */
 	private void setUpdateTime(Object object, Long time) {
 		Field[] fields = ReflectUtil.getFields(object.getClass());
@@ -422,6 +443,7 @@ public class MongoHelper {
 	 * 设置创建时间
 	 * 
 	 * @param object 对象
+	 * @param time   创建时间
 	 */
 	private void setCreateTime(Object object, Long time) {
 		Field[] fields = ReflectUtil.getFields(object.getClass());
@@ -452,64 +474,74 @@ public class MongoHelper {
 	 * 根据id更新
 	 * 
 	 * @param object 对象
+	 * @return String 对象id
 	 */
-	public void updateById(Object object) {
+	public String updateById(Object object) {
 		if (StrUtil.isEmpty((String) ReflectUtil.getFieldValue(object, Constant.ID))) {
-			return;
+			return null;
 		}
 		if (findById((String) ReflectUtil.getFieldValue(object, Constant.ID), object.getClass()) == null) {
-			return;
+			return null;
 		}
-		insertOrUpdate(object);
+		return insertOrUpdate(object);
 	}
 
 	/**
 	 * 根据id更新全部字段
 	 * 
 	 * @param object 对象
+	 * @return String 对象id
 	 */
-	public void updateAllColumnById(Object object) {
+	public String updateAllColumnById(Object object) {
 
 		if (StrUtil.isEmpty((String) ReflectUtil.getFieldValue(object, Constant.ID))) {
-			return;
+			return null;
 		}
 		if (findById((String) ReflectUtil.getFieldValue(object, Constant.ID), object.getClass()) == null) {
-			return;
+			return null;
 		}
 		Long time = System.currentTimeMillis();
 		setUpdateTime(object, time);
 		mongoTemplate.save(object);
 		logSave(object, time, false);
+
+		return (String) ReflectUtil.getFieldValue(object, Constant.ID);
 	}
 
 	/**
 	 * 更新查到的第一项
 	 * 
-	 * @param criteria 查询
-	 * @param update   更新
-	 * @param clazz    类
+	 * @param criteriaWrapper 查询
+	 * @param updateBuilder   更新
+	 * @param clazz           类
+	 * @return UpdateResult 更新结果
 	 */
-	public void updateFirst(CriteriaWrapper criteriaWrapper, UpdateBuilder updateBuilder, Class<?> clazz) {
+	public UpdateResult updateFirst(CriteriaWrapper criteriaWrapper, UpdateBuilder updateBuilder, Class<?> clazz) {
 		Long time = System.currentTimeMillis();
 		Query query = new Query(criteriaWrapper.build());
 
-		mongoTemplate.updateFirst(query, updateBuilder.toUpdate(), clazz);
+		UpdateResult updateResult = mongoTemplate.updateFirst(query, updateBuilder.toUpdate(), clazz);
 		logUpdate(clazz, query, updateBuilder, false, time);
+
+		return updateResult;
 	}
 
 	/**
 	 * 更新查到的全部项
 	 * 
-	 * @param criteria 查询
-	 * @param update   更新
-	 * @param clazz    类
+	 * @param criteriaWrapper 查询
+	 * @param updateBuilder   更新
+	 * @param clazz           类
+	 * @return UpdateResult 更新结果
 	 */
-	public void updateMulti(CriteriaWrapper criteriaWrapper, UpdateBuilder updateBuilder, Class<?> clazz) {
+	public UpdateResult updateMulti(CriteriaWrapper criteriaWrapper, UpdateBuilder updateBuilder, Class<?> clazz) {
 
 		Long time = System.currentTimeMillis();
 		Query query = new Query(criteriaWrapper.build());
-		mongoTemplate.updateMulti(new Query(criteriaWrapper.build()), updateBuilder.toUpdate(), clazz);
+		UpdateResult updateResult = mongoTemplate.updateMulti(new Query(criteriaWrapper.build()), updateBuilder.toUpdate(), clazz);
 		logUpdate(clazz, query, updateBuilder, true, time);
+
+		return updateResult;
 	}
 
 	/**
@@ -517,13 +549,14 @@ public class MongoHelper {
 	 * 
 	 * @param id    对象
 	 * @param clazz 类
+	 * @return DeleteResult 删除结果
 	 */
-	public void deleteById(String id, Class<?> clazz) {
+	public DeleteResult deleteById(String id, Class<?> clazz) {
 
 		if (StrUtil.isEmpty(id)) {
-			return;
+			return null;
 		}
-		deleteByQuery(new CriteriaAndWrapper().eq(Constant::getId, id), clazz);
+		return deleteByQuery(new CriteriaAndWrapper().eq(Constant::getId, id), clazz);
 	}
 
 	/**
@@ -531,14 +564,15 @@ public class MongoHelper {
 	 * 
 	 * @param id    对象
 	 * @param clazz 类
+	 * @return DeleteResult 删除结果
 	 */
-	public void deleteByIds(List<String> ids, Class<?> clazz) {
+	public DeleteResult deleteByIds(List<String> ids, Class<?> clazz) {
 
 		if (ids == null || ids.size() == 0) {
-			return;
+			return null;
 		}
 
-		deleteByQuery(new CriteriaAndWrapper().in(Constant::getId, ids), clazz);
+		return deleteByQuery(new CriteriaAndWrapper().in(Constant::getId, ids), clazz);
 	}
 
 	/**
@@ -546,12 +580,15 @@ public class MongoHelper {
 	 * 
 	 * @param criteria 查询
 	 * @param clazz    类
+	 * @return DeleteResult 删除结果
 	 */
-	public void deleteByQuery(CriteriaWrapper criteriaWrapper, Class<?> clazz) {
+	public DeleteResult deleteByQuery(CriteriaWrapper criteriaWrapper, Class<?> clazz) {
 		Long time = System.currentTimeMillis();
 		Query query = new Query(criteriaWrapper.build());
-		mongoTemplate.remove(query, clazz);
+		DeleteResult deleteResult = mongoTemplate.remove(query, clazz);
 		logDelete(clazz, query, time);
+
+		return deleteResult;
 	}
 
 	/**
@@ -601,11 +638,12 @@ public class MongoHelper {
 	 * 累加某一个字段的数量,原子操作
 	 * 
 	 * @param object
+	 * @return UpdateResult 更新结果
 	 */
-	public <R, E> void addCountById(String id, SerializableFunction<E, R> property, Number count, Class<?> clazz) {
+	public <R, E> UpdateResult addCountById(String id, SerializableFunction<E, R> property, Number count, Class<?> clazz) {
 		UpdateBuilder updateBuilder = new UpdateBuilder().inc(property, count);
 
-		updateFirst(new CriteriaAndWrapper().eq(Constant::getId, id), updateBuilder, clazz);
+		return updateFirst(new CriteriaAndWrapper().eq(Constant::getId, id), updateBuilder, clazz);
 	}
 
 	/**
@@ -956,8 +994,8 @@ public class MongoHelper {
 	 * 
 	 * @param list     列表
 	 * @param clazz    类
-	 * @param property 属性
-	 * @return List<T> 列表
+	 * @param property 属性名
+	 * @return List<T> 属性列表
 	 */
 	@SuppressWarnings("unchecked")
 	private <T> List<T> extractProperty(List<?> list, String property, Class<T> clazz) {
