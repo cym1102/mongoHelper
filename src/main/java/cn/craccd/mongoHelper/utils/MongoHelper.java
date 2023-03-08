@@ -850,6 +850,30 @@ public class MongoHelper {
 		List<T> propertyList = extractProperty(list, ReflectionUtil.getFieldName(property), propertyClass);
 		return propertyList;
 	}
+	
+	
+	/**
+	 * 根据条件查找某个属性
+	 * 
+	 * @param <T>           类型
+	 * @param criteria      查询
+	 * @param documentClass 类
+	 * @param property      属性
+	 * @param propertyClass 属性类
+	 * @return List 列表
+	 */
+	public <T, R, E> List<T> findPropertiesByQuery(CriteriaWrapper criteriaWrapper, Class<?> documentClass,
+			String property, Class<T> propertyClass) {
+		Query query = new Query(criteriaWrapper.build());
+		query.fields().include(property);
+
+		Long systemTime = System.currentTimeMillis();
+		List<?> list = mongoTemplate.find(query, documentClass);
+		logQuery(documentClass, query, systemTime);
+
+		List<T> propertyList = extractProperty(list, property, propertyClass);
+		return propertyList;
+	}
 
 	/**
 	 * 根据条件查找某个属性

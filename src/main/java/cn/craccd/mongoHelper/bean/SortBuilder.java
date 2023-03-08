@@ -14,16 +14,16 @@ public class SortBuilder {
 	List<Order> orderList = new ArrayList<>();
 
 	public SortBuilder() {
-		
-	}
 
-//	public SortBuilder(String column, Direction direction) {
-//		Order order = new Order(direction, column);
-//		orderList.add(order);
-//	}
+	}
 
 	public SortBuilder(List<Order> orderList) {
 		this.orderList.addAll(orderList);
+	}
+
+	public SortBuilder(String column, Direction direction) {
+		Order order = new Order(direction, column);
+		orderList.add(order);
 	}
 
 	public <E, R> SortBuilder(SerializableFunction<E, R> column, Direction direction) {
@@ -31,11 +31,11 @@ public class SortBuilder {
 		orderList.add(order);
 	}
 
-//	public SortBuilder add(String column, Direction direction) {
-//		Order order = new Order(direction, column);
-//		orderList.add(order);
-//		return this;
-//	}
+	public SortBuilder add(String column, Direction direction) {
+		Order order = new Order(direction, column);
+		orderList.add(order);
+		return this;
+	}
 
 	public <E, R> SortBuilder add(SerializableFunction<E, R> column, Direction direction) {
 		Order order = new Order(direction, ReflectionUtil.getFieldName(column));

@@ -12,24 +12,28 @@ public class UpdateBuilder {
 
 	}
 
-//	public UpdateBuilder(String key, Object value) {
-//		update.set(key, value);
-//	}
+	public UpdateBuilder(String key, Object value) {
+		update.set(key, value);
+	}
 
 	public <E, R> UpdateBuilder(SerializableFunction<E, R> key, Object value) {
 		update.set(ReflectionUtil.getFieldName(key), value);
 	}
 
-//	public UpdateBuilder set(String key, Object value) {
-//		update.set(key, value);
-//		return this;
-//	}
+	public UpdateBuilder set(String key, Object value) {
+		update.set(key, value);
+		return this;
+	}
 
 	public <E, R> UpdateBuilder set(SerializableFunction<E, R> key, Object value) {
 		update.set(ReflectionUtil.getFieldName(key), value);
 		return this;
 	}
-	
+
+	public UpdateBuilder inc(String key, Number count) {
+		update.inc(key, count);
+		return this;
+	}
 
 	public <E, R> UpdateBuilder inc(SerializableFunction<E, R> key, Number count) {
 		update.inc(ReflectionUtil.getFieldName(key), count);
