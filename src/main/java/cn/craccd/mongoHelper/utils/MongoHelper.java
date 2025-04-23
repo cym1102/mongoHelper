@@ -393,6 +393,41 @@ public class MongoHelper {
 		return (String) ReflectUtil.getFieldValue(object, Constant.ID);
 	}
 
+    /**
+     * 仅仅新增
+     *
+     * @param object,对象里的id如果要手动指定请使用{@link {@link org.bson.types.ObjectId}
+     * @return {@link String }
+     * @author lgc
+     * @date 2025-03-26 15:27
+     */
+    public String insertOnly(Object object) {
+
+
+        Long time = System.currentTimeMillis();
+
+        // 插入
+        // 设置插入时间
+        setCreateTime(object, time);
+        // 设置更新时间
+        setUpdateTime(object, time);
+        // 设置默认值
+        setDefaultVaule(object);
+
+        // 克隆一个@IgnoreColumn的字段设为null的对象;
+        Object objectClone = BeanUtil.copyProperties(object, object.getClass());
+        ignoreColumn(objectClone);
+
+        mongoTemplate.save(objectClone);
+        String id = (String) ReflectUtil.getFieldValue(objectClone, Constant.ID);
+
+        // 设置id值
+        ReflectUtil.setFieldValue(object, Constant.ID, id);
+
+        logSave(objectClone, time, true);
+        return (String) ReflectUtil.getFieldValue(object, Constant.ID);
+    }
+
 	/**
 	 * 批量插入
 	 * 

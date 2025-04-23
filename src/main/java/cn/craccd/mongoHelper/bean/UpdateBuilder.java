@@ -44,4 +44,22 @@ public class UpdateBuilder {
 		return update;
 	}
 
+    public <E, R> UpdateBuilder rename(SerializableFunction<E, R> oldColumnName, String newColumnName) {
+        update.rename(ReflectionUtil.getFieldName(oldColumnName), newColumnName);
+        return this;
+    }
+
+    /**
+     * 支持嵌套，例如data.name修改为data.firstName
+     *
+     * @param oldColumnName  旧列名
+     * @param newColumnName  新列名
+     * @return {@link UpdateBuilder }
+     * @author lgc
+     * @date 2025-03-27 15:13
+     */
+    public UpdateBuilder rename(String oldColumnName, String newColumnName) {
+        update.rename(oldColumnName, newColumnName);
+        return this;
+    }
 }

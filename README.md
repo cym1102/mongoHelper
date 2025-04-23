@@ -16,7 +16,7 @@ spring-data-mongodb增强工具包，简化 CRUD 操作，提供类mybatis plus�
     <dependency>
         <groupId>cn.craccd</groupId>
         <artifactId>mongoHelper</artifactId>
-        <version>0.8.3</version>
+        <version>0.8.4</version>
     </dependency>
 ```
 

@@ -7,7 +7,7 @@
 	<name>mongoHelper</name>
 	<description>spring-data-mongodb增强工具包，简化 CRUD 操作，提供类jpa的数据库操作</description>
 	<url>https://gitee.com/cym1102/mongoHelper</url>
-	<version>0.8.3</version>
+	<version>0.8.4</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -37,8 +37,13 @@
 	</licenses>
 	<developers>
 		<developer>
+			<id>repository</id>
 			<name>chenyimeng</name>
 			<email>cym1102@qq.com</email>
+	        <roles>
+	            <role>Project Manager</role>
+	            <role>Developer</role>
+	        </roles>
 		</developer>
 	</developers>
 
@@ -172,6 +177,7 @@
 							</execution>
 						</executions>
 					</plugin>
+					<!--
 					<plugin>
 						<groupId>org.sonatype.plugins</groupId>
 						<artifactId>nexus-staging-maven-plugin</artifactId>
@@ -183,6 +189,17 @@
 							<autoReleaseAfterClose>true</autoReleaseAfterClose>
 						</configuration>
 					</plugin>
+					-->
+				<plugin>
+		                <groupId>org.sonatype.central</groupId>
+		                <artifactId>central-publishing-maven-plugin</artifactId>
+		                <version>0.4.0</version>
+		                <extensions>true</extensions>
+		                <configuration>
+		                    <publishingServerId>repository</publishingServerId>
+		                    <tokenAuth>true</tokenAuth>
+		                </configuration>
+		            </plugin>
 				</plugins>
 			</build>
 		</profile>
