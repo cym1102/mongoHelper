@@ -25,6 +25,7 @@ import cn.hutool.core.util.ZipUtil;
 import cn.hutool.json.JSONArray;
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
+import cn.hutool.log.StaticLog;
 
 /**
  * 数据库导入导出工具
@@ -70,7 +71,7 @@ public class ImportExportUtil {
 						lines.add(JSONUtil.toJsonStr(object));
 					}
 					FileUtil.appendLines(lines, path + File.separator + clazz.getSimpleName() + ".json", "UTF-8");
-					System.out.println(clazz.getSimpleName() + "表导出了" + page.getList().size() + "条数据");
+					StaticLog.info(clazz.getSimpleName() + "表导出了" + page.getList().size() + "条数据");
 					page.setCurr(page.getCurr() + 1);
 				}
 			}
@@ -86,7 +87,7 @@ public class ImportExportUtil {
 
 	public void importDb(String path) {
 		if (!FileUtil.exist(path)) {
-			System.out.println(path + "文件不存在");
+			StaticLog.info(path + "文件不存在");
 			return;
 		}
 		BufferedReader reader = null;
@@ -114,14 +115,14 @@ public class ImportExportUtil {
 						String json = reader.readLine();
 						if (StrUtil.isEmpty(json)) {
 							mongoTemplate.insertAll(list);
-							System.out.println(clazz.getSimpleName() + "表导入了" + list.size() + "条数据");
+							StaticLog.info(clazz.getSimpleName() + "表导入了" + list.size() + "条数据");
 							list.clear();
 							break;
 						}
 						list.add(JSONUtil.toBean(json, clazz));
 						if (list.size() == 1000) {
 							mongoTemplate.insertAll(list);
-							System.out.println(clazz.getSimpleName() + "表导入了" + list.size() + "条数据");
+							StaticLog.info(clazz.getSimpleName() + "表导入了" + list.size() + "条数据");
 							list.clear();
 						}
 					}

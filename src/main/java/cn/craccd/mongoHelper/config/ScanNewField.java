@@ -3,8 +3,6 @@ package cn.craccd.mongoHelper.config;
 import java.lang.reflect.Field;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.index.IndexOperations;
@@ -17,14 +15,14 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.stereotype.Service;
 
-import com.mongodb.client.result.UpdateResult;
-
-import cn.craccd.mongoHelper.bean.IgnoreColumn;
 import cn.craccd.mongoHelper.bean.IgnoreDocument;
 import cn.craccd.mongoHelper.bean.InitValue;
 import cn.craccd.mongoHelper.utils.PackageUtil;
 import cn.hutool.core.util.ClassUtil;
 import cn.hutool.core.util.ReflectUtil;
+import cn.hutool.log.StaticLog;
+import com.mongodb.client.result.UpdateResult;
+import jakarta.annotation.PostConstruct;
 
 /**
  * 启动时将表初始化
@@ -32,6 +30,7 @@ import cn.hutool.core.util.ReflectUtil;
  */
 @Service
 public class ScanNewField {
+
 	@Autowired
 	PackageUtil packageUtil;
 	// 写链接(写到主库,可使用事务)
@@ -59,7 +58,7 @@ public class ScanNewField {
 			// 创建表
 			if (!mongoTemplate.collectionExists(clazz)) {
 				mongoTemplate.createCollection(clazz);
-				System.out.println("创建了" + clazz.getSimpleName() + "表");
+                StaticLog.info("创建了" + clazz.getSimpleName() + "表");
 			}
 
 			// 创建索引
@@ -108,7 +107,7 @@ public class ScanNewField {
 							Update update = new Update().set(field.getName(), value);
 							UpdateResult updateResult = mongoTemplate.updateMulti(query, update, clazz);
 
-							System.out.println(clazz.getSimpleName() + "表更新了" + updateResult.getModifiedCount() + "条默认值");
+                            StaticLog.info(clazz.getSimpleName() + "表更新了" + updateResult.getModifiedCount() + "条默认值");
 						}
 					}
 				}

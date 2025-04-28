@@ -7,19 +7,22 @@
 	<name>mongoHelper</name>
 	<description>spring-data-mongodb增强工具包，简化 CRUD 操作，提供类jpa的数据库操作</description>
 	<url>https://gitee.com/cym1102/mongoHelper</url>
-	<version>0.8.4</version>
+	<version>1.0.0</version>
 
 	<properties>
+		<configuration-tokenAuth>true</configuration-tokenAuth>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<maven-jar-plugin.version>3.1.1</maven-jar-plugin.version>
-		<java.version>1.8</java.version>
+		<java.version>17</java.version>
+        <hutool.version>5.8.37</hutool.version>
+		<spring-doc.version>2.8.6</spring-doc.version>
+		<gpg.skip>true</gpg.skip> <!-- 禁用GPG签名,发布时注释  -->
 	</properties>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>2.7.5</version>
+		<version>3.4.4</version>
 		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 
@@ -62,14 +65,18 @@
 		<dependency>
 			<groupId>cn.hutool</groupId>
 			<artifactId>hutool-all</artifactId>
-			<version>5.8.14</version>
+			<version>${hutool.version}</version>
 		</dependency>
 
-		<dependency>
-			<groupId>io.swagger</groupId>
-			<artifactId>swagger-annotations</artifactId>
-			<version>1.6.9</version>
-		</dependency>
+
+        <dependency>
+            <groupId>org.springdoc</groupId>
+            <artifactId>springdoc-openapi-starter-webmvc-api</artifactId>
+            <version>${spring-doc.version}</version>
+        </dependency>
+
+
+
 	</dependencies>
 
 
@@ -78,7 +85,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<!-- <version>3.8.1</version> -->
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
@@ -88,7 +94,6 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-javadoc-plugin</artifactId>
-				<!-- <version>3.1.1</version> -->
 				<configuration>
 					<failOnError>false</failOnError>
 					<doclint>none</doclint>
@@ -131,13 +136,12 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-source-plugin</artifactId>
-						<!-- <version>3.1.0</version> -->
 						<executions>
 							<execution>
 								<id>attach-sources</id>
-								<phase>package</phase>
+								<phase>verify</phase>
 								<goals>
-									<goal>jar-no-fork</goal>
+									<goal>jar</goal>
 								</goals>
 							</execution>
 						</executions>
@@ -146,8 +150,8 @@
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-compiler-plugin</artifactId>
 						<configuration>
-							<source>1.8</source>
-							<target>1.8</target>
+							<source>${java.version}</source>
+							<target>${java.version}</target>
 						</configuration>
 					</plugin>
 					<plugin>
@@ -166,7 +170,7 @@
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>
 						<artifactId>maven-gpg-plugin</artifactId>
-						<version>1.6</version>
+						<version>3.0.1</version>
 						<executions>
 							<execution>
 								<id>sign-artifacts</id>
@@ -177,27 +181,13 @@
 							</execution>
 						</executions>
 					</plugin>
-					<!--
 					<plugin>
-						<groupId>org.sonatype.plugins</groupId>
-						<artifactId>nexus-staging-maven-plugin</artifactId>
-						<version>1.6.8</version>
-						<extensions>true</extensions>
-						<configuration>
-							<serverId>repository</serverId>
-							<nexusUrl>https://oss.sonatype.org/</nexusUrl>
-							<autoReleaseAfterClose>true</autoReleaseAfterClose>
-						</configuration>
-					</plugin>
-					-->
-				<plugin>
 		                <groupId>org.sonatype.central</groupId>
 		                <artifactId>central-publishing-maven-plugin</artifactId>
-		                <version>0.4.0</version>
+		                <version>0.7.0</version>
 		                <extensions>true</extensions>
 		                <configuration>
 		                    <publishingServerId>repository</publishingServerId>
-		                    <tokenAuth>true</tokenAuth>
 		                </configuration>
 		            </plugin>
 				</plugins>
